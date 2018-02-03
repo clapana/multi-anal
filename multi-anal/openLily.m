@@ -6,7 +6,8 @@ function openLily(header)
 	filename = strcat(header, ".ly")
 	file_id = fopen(filename, "wt");
 
-	fprintf(file_id,"\\version \"2.18.2\" \n  \\header {\n title = \"%s\" \n} \n \\score { \n \\new PianoStaff { \n  \\autochange { \n", header);
+	fprintf(file_id,"\\version \"2.18.2\" \n");
+	fprintf(file_id, "\\header {\n title = \"%s\" \n tagline = \"Multiphonics Finder by Claudio\"\n} \n", header)
 
 	fclose(file_id)
 
