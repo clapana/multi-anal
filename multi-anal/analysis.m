@@ -1,7 +1,9 @@
 %Programma che legge file audio, lo analizza
 clf;  %clear the current figure window
 
-[x fs nbits] = wavread("bcl-dyads/bass_clarinet_dyad_113.wav");
+file_id = "bass_clarinet_dyad_113";
+filename = strcat("bcl-dyads/", file_id, ".wav")
+[x fs nbits] = wavread(filename);
 
 %Faccio la fft del file in caricato
 N = 65536;
@@ -29,11 +31,28 @@ do
 	i++;
 until(10*log10(amps(i-1)/amps(1)) < -18) %continuo la ricerca finché non cado sotto una certa soglia di ampiezza dei bin
 
-dim = i-2;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                            %%%
+%%%   SCRIVO I FILE LILYPOND   %%%
+%%%                            %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-writeFullLily(freqs_max, amps, "Multifonico_richiesto");
+%Chiamo la funzione writeFullLily che riceve 5 parametri:
+%	1) L'array di note
+%	2) L'array delle ampiezze
+%	3) Quanti multifonici voglio stampare sulla pagina:
+%						se > 1 allora come primi due parametri devo passare delle matrici
+%	4) Il titolo della pagina
+%	5) Il titolo per ciascun rigo
+%Quindi compila i
+writeFullLily(freqs_max, amp, 1, "Multifonico_richiesto", file_id);
 
 
+%%%%%%%%%%%%%%%%%%%%
+%%%              %%%
+%%%     PLOT     %%%
+%%%              %%%
+%%%%%%%%%%%%%%%%%%%%
 plot(F, Xs)
 xlabel("Frequency/fs")
 axis([0 0.5])

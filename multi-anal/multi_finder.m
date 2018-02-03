@@ -22,14 +22,19 @@ for i = 1 : rows(data)
 	aux(i, :) = mfind - data(i, 1:data_col);
 end
 
-%calcolo la norma e ne cerco il minimo. L'indice index relativo sarà il multifonico cercato.
+%Calcolo la norma su ogni riga.
+%Ordinando poi i risultati ottenuti in maniera crescente avrò l'ordine
+%dei multifonici in ordine decrescente di compatibilità
 norma = zeros(1, rows(data));
 for i = 1 : rows(data)
 	norma(i) = aux(i, 1)^2 + aux(i, 2)^2;
 end
 
-[value, index] = min(norma);
-
+norma_ordinata = zeros(size(norma));
+index = zeros(size(norma));
+[norma_ordinata, index] = sort(norma); %il vettore INDEX contiene gli indici originali
+norma_ordinata;
+index;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38,8 +43,24 @@ end
 %%%                            %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%Chiamo la funzione che date le note, le ampiezze e il titolo produce il file lilypond relativo e lo apre
-writeFullLily(mfind, [ ], "Multifonico_richiesto");
+%Chiamo la funzione writeFullLily che riceve 5 parametri:
+%	1) L'array di note
+%	2) L'array delle ampiezze
+%	3) Quanti multifonici voglio stampare sulla pagina:
+%						se > 1 allora come primi due parametri devo passare delle matrici
+%	4) Il titolo della pagina
+%	5) Il titolo per ciascun rigo
+%Quindi compila il file di lily e lo apre
+%
+writeFullLily(mfind, [ ], 1, "Multifonico_richiesto", " ");
 
-st = cstrcat("Suggerito_multifonico_n.", num2str(index));
-writeFullLily(data(index, :), [ ], st);
+%Stampo i primi LUN multifonici che mi interessano
+% N.B.: sto passando la matrice ordinata secondo l'array index
+lun = 4;
+amp = zeros(size(data));
+writeFullLily(data(index, :), amp, lun, "Multifonici_consigliati", index);
+
+
+
+
+%EOF
