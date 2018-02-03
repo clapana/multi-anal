@@ -1,11 +1,12 @@
 %Funzione per scrivere l'intestazinoe del file LilyPond
 %
 %
-function openLily
+function openLily(header)
 
-	file_id = fopen("test.ly", "wt");
+	filename = strcat(header, ".ly")
+	file_id = fopen(filename, "wt");
 
-	fprintf(file_id, "\\version \"2.18.2\" \n \\score { \n \\new PianoStaff { \n  \\autochange { \n"); %intestazione del file LilyPond
+	fprintf(file_id,"\\version \"2.18.2\" \n  \\header {\n title = \"%s\" \n} \n \\score { \n \\new PianoStaff { \n  \\autochange { \n", header);
 
 	fclose(file_id)
 

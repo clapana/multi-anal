@@ -1,7 +1,7 @@
 %Programma che legge file audio, lo analizza
 clf;  %clear the current figure window
 
-[x fs nbits] = wavread("bcl-dyads/bass_clarinet_dyad_107.wav");
+[x fs nbits] = wavread("bcl-dyads/bass_clarinet_dyad_113.wav");
 
 %Faccio la fft del file in caricato
 N = 65536;
@@ -31,17 +31,7 @@ until(10*log10(amps(i-1)/amps(1)) < -18) %continuo la ricerca finché non cado s
 
 dim = i-2;
 
-openLily;
-writeLily(freqs_max, amps, dim);
-closeLily;
-
-%for i = 1 : dim
-%	pitch = freqToLily(freqs_max(i));
-%	writeLily2(pitch);
-%end
-
-unix("/Applications/LilyPond.app/Contents/Resources/bin/lilypond test.ly"); %chiama lilypond che compila il file
-unix ("open test.pdf"); %apre il pdf
+writeFullLily(freqs_max, amps, "Multifonico_richiesto");
 
 
 plot(F, Xs)
