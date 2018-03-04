@@ -41,7 +41,7 @@ function Y = freqToLily(freq)
     	case 4
     		Note = "e";
     	case 4.5
-    		Note = "eis";
+    		Note = "eih";
     	case 5
     		Note = "f";
     	case 5.5

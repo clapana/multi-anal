@@ -1,6 +1,6 @@
-%Programma per leggere il database di multifonici e creare un file con le prime num note di ciascun multifonico
+%Programma per leggere il database di multifonici e crea un file con le prime num _notes di ciascun multifonico
 
-files = glob("bcl-dyads/*"); %leggo tutti i file dentro la cartella
+files = glob("oboe_multi/*"); %leggo tutti i file dentro la cartella
 							% per accedervi devo chiamare fn{i}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -9,7 +9,8 @@ files = glob("bcl-dyads/*"); %leggo tutti i file dentro la cartella
 %%%                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-file_id = fopen("database.txt", "wt");
+database_name = "database_oboe.txt";
+file_id = fopen(database_name, "wt");
 fclose(file_id);
 for j = 1 : rows(files)
 
@@ -21,17 +22,25 @@ for j = 1 : rows(files)
 	Xs = fftshift(X);
 	F = [-N/2:N/2-1]/N;
 
-	num_notes = 2; %il numero di note che voglio salvare per ciascun multifonico
+	num_notes = 4; %<<<--------------------- il numero di note che voglio salvare per ciascun multifonico
 	freqs_max = zeros(1, num_notes);
 
 	Spec = X(1:N/2, 1); %per comodità prendo metà spettro
+	%Azzero lo spettro fuori dal range di udibilità
+	bin_inf = round(20*N/fs);
+	bin_sup = round(2e4*N/fs);
+	Spec(1:bin_inf) = 0;
+	Spec(bin_sup:N/2) = 0;
 
 	i = 1;
+	k = 1;
 	for i = 1 : num_notes
 		%Cerco il massimo nello spettro e ne individuo il bin.
 		[maxval, bin] = max(max(Spec, [], 2));
 		freqs_max(i) = fs/N*bin;
 		amps(i) = maxval;
+		k++;
+		amps_norm(k-1) = 10*log10(amps(k-1)/amps(1)); %ampiezze normalizzate al picco
 		%Quindi calcolo una deviazione di 1/4 di tono attorno a quella frequenza a azzero
 		%tutti i bin corrispondenti a al range individuato da quelle due frequenze (che avranno freqs_max(i) come centro).
 		f_quarterlower = freqs_max(i)/(2^(1/24));
@@ -41,15 +50,29 @@ for j = 1 : rows(files)
 		Spec(bin_quarterlower:bin_quarterhigher) = 0;
 	end
 
-	freqs_max = sort(freqs_max);
+	%
+	%Ordino le frequenze in modo crescente così da poter ordinare anche le ampiezze a loro relative
+	%
+	index = zeros(size(num_notes));
+	[freqs_max, index] = sort(freqs_max);
+	index;
 
-	file_id = fopen("database.txt", "a");
+	file_id = fopen(database_name, "a");
+	%
+	%Scrivo nel database le frequenze
 		for l = 1 : num_notes
 			fprintf(file_id, "%f ", freqs_max(l));
 		end
-		fprintf(file_id, "%s \n", files{j});
+	%
+	%Scrivo nel database le ampiezze normalizzate
+		for l = 1 : num_notes
+			fprintf(file_id, "%f ", amps_norm(index(l)));
+		end
+	%
+	%Scrivo nel database il nome del file audio analizzato
+	fprintf(file_id, "%s \n", files{j});
 	fclose(file_id);
-	end
+end
+printf("Database creato col nome \"%s\"\n", database_name);
 
-%unix("/Applications/LilyPond.app/Contents/Resources/bin/lilypond test.ly"); %chiama lilypond che compila il file
-%unix ("open test.pdf"); %apre il pdf
+%EOF

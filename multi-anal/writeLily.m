@@ -8,11 +8,10 @@ function writeLily(filename, freqs_max, amps, dim, multi_title)
 	fprintf(file_id, "\\score { \n \\new PianoStaff { \n  \\autochange { \n"); %apertura del blocco musicale
 	%fprintf(file_id, "%s \n", note); %contenuto musicale
 	for i = 1 : dim
-		%note = setNoteSize(i);
-		%fprintf(file_id, "%s \n", note); %contenuto musicale
-
 		pitch = freqToLily(freqs_max(i));
-		fprintf(file_id, "%s \n", pitch); %contenuto musicale
+		dyn = ampToLily(amps(i));
+		fprintf(file_id, "%s ", pitch); %nota musicale
+		fprintf(file_id, "%s \n", dyn); %dinamica
 	end
 
 	fprintf(file_id, "}}\n"); %chiusura del blocco musicale

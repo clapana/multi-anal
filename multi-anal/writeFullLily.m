@@ -1,4 +1,4 @@
-%Funzione per scrivere il contenuto musicale del file LilyPond
+%Funzione per scrivere il file Lilypond
 %
 %
 function writeFullLily(note, amp, lun, header, multi_title)

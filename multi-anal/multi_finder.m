@@ -1,12 +1,14 @@
 %Programma che date delle note lilypond in input trova il multifonico nel database che più gli si avvicina
 
-data = dlmread("database.txt"); %leggo la matrice del database che ha come ultima colonna il nome del multifonico
-								%quindi definisco una variabile ausiliaria col = columns(data) - 1
-data_col = columns(data) - 1;
+data = dlmread("database_oboe.txt"); %leggo la matrice del database che ha come ultima colonna il nome del multifonico
+								%Definisco una variabile ausiliaria data_col in cui indico quante frequenze della matrice voglio
+								% il vettore lily dovrà avere stessa dimensione di data_col
+data_col = 4;  % <<<<<--------------------------------------
 
 % Deve ricevere una nota in formato NOTA di lilypond_OTTAVA (notazione scientifica)
 % IMPORTANTE: scrivere come un vettore colonna
-lily = ["f4"; "e5"];
+%lily = ["f4"; "e5"; "dis6"];
+%lily = ["gis5"; "dis6"; "a6"; "c7"]; %deve avere stessa dimensinoe di data_col
 dim = size(lily, 1);
 mfind = zeros(1, dim);
 
@@ -52,14 +54,13 @@ index;
 %	5) Il titolo per ciascun rigo
 %Quindi compila il file di lily e lo apre
 %
-writeFullLily(mfind, [ ], 1, "Multifonico_richiesto", " ");
+a = [-20, -20, -20, -20];
+writeFullLily(mfind, a, 1, "Multifonico_richiesto", " ");
 
 %Stampo i primi LUN multifonici che mi interessano
 % N.B.: sto passando la matrice ordinata secondo l'array index
 lun = 4;
-amp = zeros(size(data));
-writeFullLily(data(index, :), amp, lun, "Multifonici_consigliati", index);
-
+writeFullLily(data(index, 1:data_col), data(index, (data_col+1):(data_col*2)), lun, "Multifonici_consigliati", index);
 
 
 

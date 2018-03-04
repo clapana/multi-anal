@@ -1,8 +1,10 @@
 %Programma che legge file audio, lo analizza
 clf;  %clear the current figure window
 
-file_id = "bass_clarinet_dyad_113";
-filename = strcat("bcl-dyads/", file_id, ".wav")
+%file_id = "bass_clarinet_dyad_111";
+%filename = strcat("bcl-dyads/", file_id, ".wav")
+file_id = "oboe_002";
+filename = strcat("oboe_multi/", file_id, ".wav")
 [x fs nbits] = wavread(filename);
 
 %Faccio la fft del file in caricato
@@ -14,6 +16,12 @@ F = [-N/2:N/2-1]/N;
 Spec = X(1:N/2, 1); %per comodità prendo metà spettro
 size(X);
 size(Spec);
+
+%Azzero lo spettro fuori dal range di udibilità
+bin_inf = round(20*N/fs);
+bin_sup = round(2e4*N/fs);
+Spec(1:bin_inf) = 0;
+Spec(bin_sup:N/2) = 0;
 
 i = 1;
 do
@@ -29,7 +37,8 @@ do
 	bin_quarterhigher = round(f_quarterhigher*N/fs);
 	Spec(bin_quarterlower:bin_quarterhigher) = 0;
 	i++;
-until(10*log10(amps(i-1)/amps(1)) < -18) %continuo la ricerca finché non cado sotto una certa soglia di ampiezza dei bin
+	amps_norm(i-1) = 10*log10(amps(i-1)/amps(1)); %ampiezze normalizzate al picco
+until(amps_norm(i-1) < -12) %continuo la ricerca finché non cado sotto una certa soglia di ampiezza dei bin
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                            %%%
@@ -45,7 +54,7 @@ until(10*log10(amps(i-1)/amps(1)) < -18) %continuo la ricerca finché non cado s
 %	4) Il titolo della pagina
 %	5) Il titolo per ciascun rigo
 %Quindi compila i
-writeFullLily(freqs_max, amp, 1, "Multifonico_richiesto", file_id);
+writeFullLily(freqs_max, amps_norm, 1, "Multifonico_richiesto", file_id);
 
 
 %%%%%%%%%%%%%%%%%%%%
